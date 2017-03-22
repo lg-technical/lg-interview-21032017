@@ -55,6 +55,7 @@ of time spent by all users on course every day (in seconds). For example
 
 - Skip days when no activity is present
 - result should be presented assuming UTC timezone
+- please handle a situation, when the course session crossed the midnight
 
 2. Nonfunctional requirements:
 - application has to be written in any JVM language (Java 8 is preferable but scala, 
@@ -64,6 +65,5 @@ kotlin or groovy are also allowed)
 setting up separate database outside of project.
 - code should be properly tested
 - service dependencies and lifecycle should be managed by proper tool (maven, gradle, sbt) 
-
 
 
