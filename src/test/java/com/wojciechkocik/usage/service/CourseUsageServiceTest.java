@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.validation.ConstraintViolationException;
 import java.time.ZonedDateTime;
-import java.util.Random;
 
 /**
  * @author Wojciech Kocik
@@ -33,7 +32,7 @@ public class CourseUsageServiceTest {
     private CourseUsageRepository courseUsageRepository;
 
     @Test
-    public void createNewCourseUsage_dtoIsProperMappedToDatabase(){
+    public void createNewCourseUsage_dtoIsProperMappedToDatabase() {
 
         //Arrange
         String courseId = fairy.textProducer().randomString(10);
@@ -52,17 +51,17 @@ public class CourseUsageServiceTest {
         courseUsageExpected.setUserId(userId);
         courseUsageExpected.setCourseId(courseId);
         courseUsageExpected.setStarted(started);
-        courseUsageExpected.setId(1L);
 
         //Act
         CourseUsage courseUsageActual = courseUsageService.createNewCourseUsage(courseUsageCreate);
+        courseUsageExpected.setId(courseUsageActual.getId());
 
         //Arrange
         Assert.assertEquals(courseUsageExpected, courseUsageActual);
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void createNewCourseUsage_whenArgFieldsAreNull_ThrowsConstraintViolationException(){
+    public void createNewCourseUsage_whenArgFieldsAreNull_throwsConstraintViolationException() {
         //Arrange
         CourseUsageCreate courseUsageCreate = new CourseUsageCreate();
 
@@ -70,8 +69,35 @@ public class CourseUsageServiceTest {
         CourseUsage courseUsageActual = courseUsageService.createNewCourseUsage(courseUsageCreate);
     }
 
+    @Test
+    public void findDailyUsageForCourse__whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay(){
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    public void findDailyUsageForCourse_returnsProperDateFormat(){
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    public void findDailyUsageForCourse_whenDaysWithoutActivity_notPresentInResponse() {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
     @After
-    public void tearDown(){
+    public void tearDown() {
         courseUsageRepository.deleteAll();
     }
 

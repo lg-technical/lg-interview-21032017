@@ -21,7 +21,7 @@ public class FasterXmlConfiguration {
 
         //http://stackoverflow.com/a/36495029/6486380
         objectMapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false);
-        
+
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
         return objectMapper;

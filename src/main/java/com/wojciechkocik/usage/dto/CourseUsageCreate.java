@@ -1,6 +1,9 @@
 package com.wojciechkocik.usage.dto;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Tolerate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
@@ -12,7 +15,11 @@ import java.time.ZonedDateTime;
  * @since 22.03.2017
  */
 @Data
+@Builder
 public class CourseUsageCreate {
+
+    @Tolerate
+    public CourseUsageCreate() { }
 
     @NotNull
     private String userId;
