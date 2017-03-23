@@ -1,10 +1,14 @@
 package com.wojciechkocik.usage.controller;
 
 import com.wojciechkocik.usage.dto.CourseUsageCreate;
+import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.service.CourseUsageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * @author Wojciech Kocik
@@ -21,9 +25,8 @@ public class CourseUsageController {
     }
 
     @PostMapping
-    public void create(CourseUsageCreate courseUsageCreate) {
-        //TODO: service for storing data
-        log.info(courseUsageCreate.toString());
+    public CourseUsage create(@Valid @RequestBody CourseUsageCreate courseUsageCreate) {
+        return courseUsageService.createNewCourseUsage(courseUsageCreate);
     }
 
 }
