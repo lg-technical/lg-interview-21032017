@@ -1,5 +1,7 @@
 package com.wojciechkocik.usage.service;
 
+import com.wojciechkocik.usage.dto.DailyUsageForCourse;
+import com.wojciechkocik.usage.dto.DailyUsageForUser;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
@@ -14,6 +16,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Random;
@@ -82,10 +85,24 @@ public class UserUsageServiceTest {
     @Test
     public void findDailyUsagesForUser_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay() {
         //Arrange
+        String userId = fairy.textProducer().randomString(10);
+        CourseUsage courseUsageWithTimeCrossedMidnight = new CourseUsage();
+        ZonedDateTime startedOneMinuteBeforeMidnight = ZonedDateTime.parse("2017-03-23T23:59:00.000+01:00[Europe/Warsaw]");
+        courseUsageWithTimeCrossedMidnight.setStarted(startedOneMinuteBeforeMidnight);
+        courseUsageWithTimeCrossedMidnight.setCourseId(fairy.textProducer().randomString(10));
+        courseUsageWithTimeCrossedMidnight.setUserId(userId);
+        courseUsageWithTimeCrossedMidnight.setTimeSpent(Duration.ofMinutes(2).getSeconds()); //one minute in the next day
+
+        courseUsageRepository.save(courseUsageWithTimeCrossedMidnight);
+
+        int responseSizeExpected = 2;
 
         //Act
+        List<DailyUsageForUser> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
+        int responseSizeActual = dailyUsagesForCourse.size();
 
         //Assert
+        Assert.assertEquals(responseSizeExpected, responseSizeActual);
     }
 
     @Test

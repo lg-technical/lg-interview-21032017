@@ -1,6 +1,7 @@
 package com.wojciechkocik.usage.service;
 
 import com.wojciechkocik.usage.dto.CourseUsageCreate;
+import com.wojciechkocik.usage.dto.DailyUsageForCourse;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import org.jfairy.Fairy;
@@ -13,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.validation.ConstraintViolationException;
+import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 /**
  * @author Wojciech Kocik
@@ -70,12 +73,26 @@ public class CourseUsageServiceTest {
     }
 
     @Test
-    public void findDailyUsageForCourse__whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay(){
+    public void findDailyUsageForCourse_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay(){
         //Arrange
+        String courseId = fairy.textProducer().randomString(10);
+        CourseUsage courseUsageWithTimeCrossedMidnight = new CourseUsage();
+        ZonedDateTime startedOneMinuteBeforeMidnight = ZonedDateTime.parse("2017-03-23T23:59:00.000+01:00[Europe/Warsaw]");
+        courseUsageWithTimeCrossedMidnight.setStarted(startedOneMinuteBeforeMidnight);
+        courseUsageWithTimeCrossedMidnight.setCourseId(courseId);
+        courseUsageWithTimeCrossedMidnight.setUserId(fairy.textProducer().randomString(10));
+        courseUsageWithTimeCrossedMidnight.setTimeSpent(Duration.ofMinutes(2).getSeconds()); //one minute in the next day
+
+        courseUsageRepository.save(courseUsageWithTimeCrossedMidnight);
+
+        int responseSizeExpected = 2;
 
         //Act
+        List<DailyUsageForCourse> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
+        int responseSizeActual = dailyUsagesForCourse.size();
 
         //Assert
+        Assert.assertEquals(responseSizeExpected, responseSizeActual);
     }
 
     @Test

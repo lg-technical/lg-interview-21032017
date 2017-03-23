@@ -31,7 +31,7 @@ public class Application {
 		{
 			long start = Instant.now().toEpochMilli();
 
-			for(int i = 1; i < DATA_ENTITIES_QUANTITY; i++){
+			for(int i = 0; i < DATA_ENTITIES_QUANTITY; i++){
 				CourseUsageCreate courseUsageCreate = CourseUsageCreate.builder()
 						.courseId(String.valueOf(new Random().nextInt(10)))
 						.started(
