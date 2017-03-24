@@ -1,7 +1,7 @@
 package com.wojciechkocik.usage.service;
 
 import com.wojciechkocik.usage.dto.CourseUsageCreate;
-import com.wojciechkocik.usage.dto.DailyUsageForCourse;
+import com.wojciechkocik.usage.dto.DailyUsage;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import org.jfairy.Fairy;
@@ -92,7 +92,7 @@ public class CourseUsageServiceTest {
         long secondDayMinutesExpected = timeSpentMinutes - firstDayMinutesExpected;
 
         //Act
-        List<DailyUsageForCourse> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
+        List<DailyUsage> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
         int responseSizeActual = dailyUsagesForCourse.size();
         long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
         long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;

@@ -1,6 +1,6 @@
 package com.wojciechkocik.usage.service;
 
-import com.wojciechkocik.usage.dto.DailyUsageForUser;
+import com.wojciechkocik.usage.dto.DailyUsage;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import org.springframework.stereotype.Service;
@@ -15,14 +15,20 @@ import java.util.List;
 public class UserUsageServiceImpl implements UserUsageService {
 
     private final CourseUsageRepository courseUsageRepository;
+    private final TimeSpentCrossMidnightService crossMidnightService;
 
-    public UserUsageServiceImpl(CourseUsageRepository courseUsageRepository) {
+    public UserUsageServiceImpl(CourseUsageRepository courseUsageRepository, TimeSpentCrossMidnightService crossMidnightService) {
         this.courseUsageRepository = courseUsageRepository;
+        this.crossMidnightService = crossMidnightService;
     }
 
     @Override
-    public List<DailyUsageForUser> findDailyUsagesForUser(String userId) {
-        return courseUsageRepository.findSpentTimeByUserIdOnDate(userId);
+    public List<DailyUsage> findDailyUsagesForUser(String userId) {
+        List<DailyUsage> dailyUsagesForUser = courseUsageRepository.findSpentTimeByUserIdOnDate(userId);
+        List<DailyUsage> processedListByCrossedMidnightMechanism = crossMidnightService.run(dailyUsagesForUser);
+        dailyUsagesForUser.addAll(processedListByCrossedMidnightMechanism);
+
+        return dailyUsagesForUser;
     }
 
     @Override

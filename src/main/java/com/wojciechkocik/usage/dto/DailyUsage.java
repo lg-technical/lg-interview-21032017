@@ -7,12 +7,11 @@ import java.time.ZonedDateTime;
 
 /**
  * @author Wojciech Kocik
- * @since 23.03.2017
+ * @since 24.03.2017
  */
 @Data
-public class DailyUsageForCourse {
-
-    public DailyUsageForCourse(ZonedDateTime dateTime, long time) {
+public class DailyUsage {
+    public DailyUsage(ZonedDateTime dateTime, long time) {
         this.dateTime = dateTime;
         this.time = time;
     }

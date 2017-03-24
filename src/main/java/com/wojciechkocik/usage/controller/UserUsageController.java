@@ -1,6 +1,6 @@
 package com.wojciechkocik.usage.controller;
 
-import com.wojciechkocik.usage.dto.DailyUsageForUser;
+import com.wojciechkocik.usage.dto.DailyUsage;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.service.UserUsageService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +25,7 @@ public class UserUsageController {
     }
 
     @GetMapping("/{userId}/daily")
-    public List<DailyUsageForUser> getDailyUsage(@PathVariable String userId){
+    public List<DailyUsage> getDailyUsage(@PathVariable String userId){
         return userUsageService.findDailyUsagesForUser(userId);
     }
 

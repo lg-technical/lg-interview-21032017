@@ -1,6 +1,6 @@
 package com.wojciechkocik.usage.service;
 
-import com.wojciechkocik.usage.dto.DailyUsageForUser;
+import com.wojciechkocik.usage.dto.DailyUsage;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
@@ -84,6 +84,8 @@ public class UserUsageServiceTest {
     @Test
     public void findDailyUsagesForUser_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay() {
         //Arrange
+        int timeSpentMinutes = 10;
+
         String userId = fairy.textProducer().randomString(10);
         CourseUsage courseUsageWithTimeCrossedMidnight = new CourseUsage();
         ZonedDateTime startedOneMinuteBeforeMidnight = ZonedDateTime.parse("2017-03-23T23:59:00.000+01:00[Europe/Warsaw]");
@@ -96,12 +98,19 @@ public class UserUsageServiceTest {
 
         int responseSizeExpected = 2;
 
+        long firstDayMinutesExpected = 1;
+        long secondDayMinutesExpected = timeSpentMinutes - firstDayMinutesExpected;
+
         //Act
-        List<DailyUsageForUser> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
+        List<DailyUsage> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
         int responseSizeActual = dailyUsagesForCourse.size();
+        long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
+        long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;
 
         //Assert
         Assert.assertEquals(responseSizeExpected, responseSizeActual);
+        Assert.assertEquals(firstDayMinutesExpected, firstDayMinutesActual);
+        Assert.assertEquals(secondDayMinutesExpected, secondDayMinutesActual);
     }
 
     @Test
