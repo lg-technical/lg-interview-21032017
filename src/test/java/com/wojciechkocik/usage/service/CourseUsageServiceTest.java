@@ -7,6 +7,7 @@ import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import org.jfairy.Fairy;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author Wojciech Kocik
@@ -35,6 +37,11 @@ public class CourseUsageServiceTest {
 
     @Autowired
     private CourseUsageRepository courseUsageRepository;
+
+    @Before
+    public void setUp() {
+        courseUsageRepository.deleteAll();
+    }
 
     @Test
     public void createNewCourseUsage_dtoIsProperMappedToDatabase() {
@@ -81,6 +88,8 @@ public class CourseUsageServiceTest {
         String courseId = fairy.textProducer().randomString(10);
         CourseUsage courseUsageWithTimeCrossedMidnight = new CourseUsage();
         ZonedDateTime startedOneMinuteBeforeMidnight = ZonedDateTime.parse("2017-03-23T23:59:00.000+01:00[Europe/Warsaw]");
+        String firstSimpleDay = "2017-03-23";
+        String secondSimpleDay = "2017-03-24";
         courseUsageWithTimeCrossedMidnight.setStarted(startedOneMinuteBeforeMidnight);
         courseUsageWithTimeCrossedMidnight.setCourseId(courseId);
         courseUsageWithTimeCrossedMidnight.setUserId(fairy.textProducer().randomString(10));
@@ -96,8 +105,14 @@ public class CourseUsageServiceTest {
         //Act
         List<DailyUsageResponse> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
         int responseSizeActual = dailyUsagesForCourse.size();
-        long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
-        long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;
+        long firstDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(firstSimpleDay))
+                .collect(Collectors.toList()).get(0).getTime();
+        long secondDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(secondSimpleDay))
+                .collect(Collectors.toList()).get(0).getTime();
+
+        //convert to minutes
+        firstDayMinutesActual = Duration.ofSeconds(firstDayMinutesActual).toMinutes();
+        secondDayMinutesActual = Duration.ofSeconds(secondDayMinutesActual).toMinutes();
 
         //Assert
         Assert.assertEquals(responseSizeExpected, responseSizeActual);
@@ -108,7 +123,7 @@ public class CourseUsageServiceTest {
     @Test
     public void findDailyUsageForCourse_groupDate_hasProperSpentTime() {
         //Arrange
-        ZonedDateTime started = ZonedDateTime.now();
+        ZonedDateTime started = ZonedDateTime.parse("2017-03-24T11:56:26.595+01:00[Europe/Belgrade]");
         int entitiesWithSameDateForGroup = 5;
         String userId = fairy.textProducer().randomString(10);
         String courseId = fairy.textProducer().randomString(10);
@@ -116,7 +131,7 @@ public class CourseUsageServiceTest {
         for (int i = 0; i < entitiesWithSameDateForGroup; i++) {
             CourseUsage courseUsage = new CourseUsage(
                     started,
-                    new Random().nextInt(50000),
+                    new Random().nextInt(5000),
                     userId,
                     courseId
             );

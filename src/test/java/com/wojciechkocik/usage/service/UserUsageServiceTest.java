@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author Wojciech Kocik
@@ -84,7 +85,7 @@ public class UserUsageServiceTest {
     @Test
     public void findDailyUsagesForUser_groupDate_hasProperSpentTime(){
         //Arrange
-        ZonedDateTime started = ZonedDateTime.now();
+        ZonedDateTime started = ZonedDateTime.parse("2017-03-24T11:56:26.595+01:00[Europe/Belgrade]");
         int entitiesWithSameDateForGroup = 5;
         String userId = fairy.textProducer().randomString(10);
         String courseId = fairy.textProducer().randomString(10);
@@ -92,7 +93,7 @@ public class UserUsageServiceTest {
         for (int i = 0; i < entitiesWithSameDateForGroup; i++) {
             CourseUsage courseUsage = new CourseUsage(
                     started,
-                    new Random().nextInt(50000),
+                    new Random().nextInt(5000),
                     userId,
                     courseId
             );
@@ -112,15 +113,17 @@ public class UserUsageServiceTest {
     @Test
     public void findDailyUsagesForUser_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay() {
         //Arrange
-        int timeSpentMinutes = 10;
+        int timeSpentMinutes = 5;
 
         String userId = fairy.textProducer().randomString(10);
         CourseUsage courseUsageWithTimeCrossedMidnight = new CourseUsage();
         ZonedDateTime startedOneMinuteBeforeMidnight = ZonedDateTime.parse("2017-03-23T23:59:00.000+01:00[Europe/Warsaw]");
+        String firstSimpleDay = "2017-03-23";
+        String secondSimpleDay = "2017-03-24";
         courseUsageWithTimeCrossedMidnight.setStarted(startedOneMinuteBeforeMidnight);
         courseUsageWithTimeCrossedMidnight.setCourseId(fairy.textProducer().randomString(10));
         courseUsageWithTimeCrossedMidnight.setUserId(userId);
-        courseUsageWithTimeCrossedMidnight.setTimeSpent(Duration.ofMinutes(2).getSeconds()); //one minute in the next day
+        courseUsageWithTimeCrossedMidnight.setTimeSpent(Duration.ofMinutes(timeSpentMinutes).getSeconds()); //one minute in the next day
 
         courseUsageRepository.save(courseUsageWithTimeCrossedMidnight);
 
@@ -132,8 +135,14 @@ public class UserUsageServiceTest {
         //Act
         List<DailyUsageResponse> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
         int responseSizeActual = dailyUsagesForCourse.size();
-        long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
-        long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;
+        long firstDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(firstSimpleDay))
+                .collect(Collectors.toList()).get(0).getTime();
+        long secondDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(secondSimpleDay))
+                .collect(Collectors.toList()).get(0).getTime();
+
+        //convert to minutes
+        firstDayMinutesActual = Duration.ofSeconds(firstDayMinutesActual).toMinutes();
+        secondDayMinutesActual = Duration.ofSeconds(secondDayMinutesActual).toMinutes();
 
         //Assert
         Assert.assertEquals(responseSizeExpected, responseSizeActual);
