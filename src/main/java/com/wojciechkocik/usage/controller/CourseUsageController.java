@@ -11,6 +11,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
+ * Handles /usage/course/** http requests
+ *
  * @author Wojciech Kocik
  * @since 22.03.2017
  */

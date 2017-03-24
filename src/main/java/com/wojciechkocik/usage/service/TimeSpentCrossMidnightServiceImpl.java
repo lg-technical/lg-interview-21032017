@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Implementation of {@link TimeSpentCrossMidnightService} using java 8 features
+ *
  * @author Wojciech Kocik
  * @since 24.03.2017
  */

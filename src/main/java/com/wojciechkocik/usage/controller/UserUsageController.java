@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * Handles /usage/user/** http requests
+ *
  * @author Wojciech Kocik
  * @since 22.03.2017
  */

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
  * @since 23.03.2017
  */
 @RunWith(SpringRunner.class)
+@SuppressWarnings("unused")
 @SpringBootTest
 public class UserUsageServiceTest {
 
@@ -35,9 +36,6 @@ public class UserUsageServiceTest {
 
     @Autowired
     private UserUsageService userUsageService;
-
-    @Autowired
-    CommandLineRunner commandLineRunner;
 
     Fairy fairy = Fairy.create();
 

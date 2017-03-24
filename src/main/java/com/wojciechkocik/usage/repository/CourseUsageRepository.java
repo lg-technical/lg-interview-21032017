@@ -9,6 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 /**
+ * Repository supports {@link CourseUsage} entity
+ *
  * @author Wojciech Kocik
  * @since 22.03.2017
  */

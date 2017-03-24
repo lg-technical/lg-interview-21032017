@@ -16,12 +16,13 @@ import java.util.Random;
 @SpringBootApplication
 public class Application {
 
-    private static int DATA_ENTITIES_QUANTITY = 5000;
+    private static int DATA_ENTITIES_QUANTITY = 0;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
+    //Generates db init values for API testing purposes
     @Bean
     public CommandLineRunner generateDbInitValues(CourseUsageService courseUsageService) {
         return (evt) ->

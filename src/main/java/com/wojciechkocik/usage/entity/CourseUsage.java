@@ -12,6 +12,8 @@ import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
 /**
+ * Database entity for persist data about Course Usage Statistics
+ *
  * @author Wojciech Kocik
  * @since 22.03.2017
  */

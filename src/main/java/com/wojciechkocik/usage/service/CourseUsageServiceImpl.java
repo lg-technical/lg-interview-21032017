@@ -29,12 +29,25 @@ public class CourseUsageServiceImpl implements CourseUsageService {
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Implementation using {@link CourseUsageRepository} to store data
+     *
+     * @see CourseUsageService
+     */
     @Override
     public CourseUsage createNewCourseUsage(CourseUsageCreate courseUsageCreate) {
         CourseUsage courseUsage = modelMapper.map(courseUsageCreate, CourseUsage.class);
         return courseUsageRepository.save(courseUsage);
     }
 
+    /**
+     * Implementation using {@link CourseUsageRepository} to finding data for course usage per day.
+     *
+     * Supports a situation, when the course session crossed the midnight.
+     * Groups data by date and summing session spent time.
+     *
+     * @see CourseUsageService
+     */
     @Override
     public List<DailyUsageResponse> findDailyUsageForCourse(String courseId) {
         List<DailyUsage> dailyUsagesForCourse = courseUsageRepository.findSpentTimeByCourseIdOnDate(courseId);

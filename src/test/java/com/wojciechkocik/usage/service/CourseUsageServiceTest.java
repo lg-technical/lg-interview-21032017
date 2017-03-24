@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
  * @since 22.03.2017
  */
 @RunWith(SpringRunner.class)
+@SuppressWarnings("unused")
 @SpringBootTest
 public class CourseUsageServiceTest {
 

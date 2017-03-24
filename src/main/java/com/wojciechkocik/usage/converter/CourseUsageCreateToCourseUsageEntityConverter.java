@@ -5,6 +5,8 @@ import com.wojciechkocik.usage.entity.CourseUsage;
 import org.modelmapper.AbstractConverter;
 
 /**
+ * Converts dto {@link CourseUsageCreate} to db entity {@link CourseUsage}
+ *
  * @author Wojciech Kocik
  * @since 23.03.2017
  */
