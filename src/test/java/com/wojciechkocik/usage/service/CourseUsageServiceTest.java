@@ -73,30 +73,38 @@ public class CourseUsageServiceTest {
     }
 
     @Test
-    public void findDailyUsageForCourse_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay(){
+    public void findDailyUsageForCourse_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay() {
         //Arrange
+        int timeSpentMinutes = 5;
         String courseId = fairy.textProducer().randomString(10);
         CourseUsage courseUsageWithTimeCrossedMidnight = new CourseUsage();
         ZonedDateTime startedOneMinuteBeforeMidnight = ZonedDateTime.parse("2017-03-23T23:59:00.000+01:00[Europe/Warsaw]");
         courseUsageWithTimeCrossedMidnight.setStarted(startedOneMinuteBeforeMidnight);
         courseUsageWithTimeCrossedMidnight.setCourseId(courseId);
         courseUsageWithTimeCrossedMidnight.setUserId(fairy.textProducer().randomString(10));
-        courseUsageWithTimeCrossedMidnight.setTimeSpent(Duration.ofMinutes(2).getSeconds()); //one minute in the next day
+        courseUsageWithTimeCrossedMidnight.setTimeSpent(Duration.ofMinutes(timeSpentMinutes).getSeconds()); //one minute in the next day
 
         courseUsageRepository.save(courseUsageWithTimeCrossedMidnight);
 
         int responseSizeExpected = 2;
 
+        long firstDayMinutesExpected = 1;
+        long secondDayMinutesExpected = timeSpentMinutes - firstDayMinutesExpected;
+
         //Act
         List<DailyUsageForCourse> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
         int responseSizeActual = dailyUsagesForCourse.size();
+        long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
+        long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;
 
         //Assert
         Assert.assertEquals(responseSizeExpected, responseSizeActual);
+        Assert.assertEquals(firstDayMinutesExpected, firstDayMinutesActual);
+        Assert.assertEquals(secondDayMinutesExpected, secondDayMinutesActual);
     }
 
     @Test
-    public void findDailyUsageForCourse_returnsProperDateFormat(){
+    public void findDailyUsageForCourse_returnsProperDateFormat() {
         //Arrange
 
         //Act

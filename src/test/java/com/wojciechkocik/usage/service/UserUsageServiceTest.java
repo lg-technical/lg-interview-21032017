@@ -1,6 +1,5 @@
 package com.wojciechkocik.usage.service;
 
-import com.wojciechkocik.usage.dto.DailyUsageForCourse;
 import com.wojciechkocik.usage.dto.DailyUsageForUser;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.entity.CourseUsage;

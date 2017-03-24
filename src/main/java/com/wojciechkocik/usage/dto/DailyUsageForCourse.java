@@ -21,4 +21,12 @@ public class DailyUsageForCourse {
     private ZonedDateTime dateTime;
 
     private long time;
+
+    public void minusSpentSeconds(long seconds){
+        time -= seconds;
+    }
+
+    public void plusSpentSeconds(long seconds){
+        time += seconds;
+    }
 }

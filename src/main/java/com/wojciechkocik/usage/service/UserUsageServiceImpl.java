@@ -22,7 +22,7 @@ public class UserUsageServiceImpl implements UserUsageService {
 
     @Override
     public List<DailyUsageForUser> findDailyUsagesForUser(String userId) {
-        return courseUsageRepository.findDailySpentTimeByUserId(userId);
+        return courseUsageRepository.findSpentTimeByUserIdOnDate(userId);
     }
 
     @Override

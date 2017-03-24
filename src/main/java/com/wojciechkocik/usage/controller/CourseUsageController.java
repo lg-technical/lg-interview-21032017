@@ -14,6 +14,7 @@ import java.util.List;
  * @author Wojciech Kocik
  * @since 22.03.2017
  */
+@Slf4j
 @RestController
 @RequestMapping("/usage/course")
 public class CourseUsageController {
@@ -26,6 +27,7 @@ public class CourseUsageController {
 
     @PostMapping
     public CourseUsage create(@Valid @RequestBody CourseUsageCreate courseUsageCreate) {
+        log.info("Creating new course usage entity");
         return courseUsageService.createNewCourseUsage(courseUsageCreate);
     }
 
@@ -33,5 +35,4 @@ public class CourseUsageController {
     public List<DailyUsageForCourse> getDailyUsage(@PathVariable String courseId){
         return courseUsageService.findDailyUsageForCourse(courseId);
     }
-
 }
