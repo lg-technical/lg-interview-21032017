@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -76,14 +77,39 @@ public class UserUsageServiceTest {
     @Test
     public void findPerCourseUsage_whenCoursesWithoutActivity_notPresentInResponse() {
         //Arrange
+        ZonedDateTime zonedDateTimeWithActivity = ZonedDateTime.now();
+        ZonedDateTime zonedDateTimeWithoutActivity = ZonedDateTime.now().minusMonths(2);
+
+        String userId = fairy.textProducer().randomString(10);
+
+        CourseUsage courseUsageWithActivity = new CourseUsage(
+                zonedDateTimeWithActivity,
+                5000,
+                userId,
+                fairy.textProducer().randomString(10)
+                );
+
+        CourseUsage courseUsageWithoutActivity = new CourseUsage(
+                zonedDateTimeWithoutActivity,
+                0,
+                userId,
+                fairy.textProducer().randomString(10)
+        );
+
+        courseUsageRepository.save(courseUsageWithActivity);
+        courseUsageRepository.save(courseUsageWithoutActivity);
+
+        int expectedResponseListSize = 1;
 
         //Act
+        int actualResponseListSize = userUsageService.findPerCourseUsage(userId).size();
 
         //Assert
+        Assert.assertEquals(expectedResponseListSize, actualResponseListSize);
     }
 
     @Test
-    public void findDailyUsagesForUser_groupDate_hasProperSpentTime(){
+    public void findDailyUsagesForUser_groupDate_hasProperSpentTime() {
         //Arrange
         ZonedDateTime started = ZonedDateTime.parse("2017-03-24T11:56:26.595+01:00[Europe/Belgrade]");
         int entitiesWithSameDateForGroup = 5;
@@ -135,9 +161,9 @@ public class UserUsageServiceTest {
         //Act
         List<DailyUsageResponse> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
         int responseSizeActual = dailyUsagesForCourse.size();
-        long firstDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(firstSimpleDay))
+        long firstDayMinutesActual = dailyUsagesForCourse.stream().filter(f -> f.getDateTime().equals(firstSimpleDay))
                 .collect(Collectors.toList()).get(0).getTime();
-        long secondDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(secondSimpleDay))
+        long secondDayMinutesActual = dailyUsagesForCourse.stream().filter(f -> f.getDateTime().equals(secondSimpleDay))
                 .collect(Collectors.toList()).get(0).getTime();
 
         //convert to minutes
@@ -151,12 +177,63 @@ public class UserUsageServiceTest {
     }
 
     @Test
-    public void findDailyUsagesForUser_whenDaysWithoutActivity_notPresentInResponse() {
+    public void findDailyUsagesForUser_returnsProperDateFormat() {
         //Arrange
+        ZonedDateTime dateTime = ZonedDateTime.now();
+        String userId = fairy.textProducer().randomString(10);
+        String courseId = fairy.textProducer().randomString(10);
+
+        CourseUsage courseUsage = new CourseUsage(
+                dateTime,
+                new Random().nextInt(50000),
+                userId,
+                courseId
+        );
+
+        courseUsageRepository.save(courseUsage);
+
+        String dateExpected = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         //Act
+        List<DailyUsageResponse> dailyUsageForCourse = userUsageService.findDailyUsagesForUser(userId);
+        String dateResponseActual = dailyUsageForCourse.get(0).getDateTime();
 
         //Assert
+        Assert.assertEquals(dateExpected, dateResponseActual);
+    }
+
+    @Test
+    public void findDailyUsagesForUser_whenDaysWithoutActivity_notPresentInResponse() {
+        //Arrange
+        ZonedDateTime zonedDateTimeWithActivity = ZonedDateTime.now();
+        ZonedDateTime zonedDateTimeWithoutActivity = ZonedDateTime.now().minusMonths(2);
+
+        String userId = fairy.textProducer().randomString(10);
+
+        CourseUsage courseUsageWithActivity = new CourseUsage(
+                zonedDateTimeWithActivity,
+                5000,
+                userId,
+                fairy.textProducer().randomString(10)
+        );
+
+        CourseUsage courseUsageWithoutActivity = new CourseUsage(
+                zonedDateTimeWithoutActivity,
+                0,
+                userId,
+                fairy.textProducer().randomString(10)
+        );
+
+        courseUsageRepository.save(courseUsageWithActivity);
+        courseUsageRepository.save(courseUsageWithoutActivity);
+
+        int expectedResponseListSize = 1;
+
+        //Act
+        int actualResponseListSize = userUsageService.findDailyUsagesForUser(userId).size();
+
+        //Assert
+        Assert.assertEquals(expectedResponseListSize, actualResponseListSize);
     }
 
     @After

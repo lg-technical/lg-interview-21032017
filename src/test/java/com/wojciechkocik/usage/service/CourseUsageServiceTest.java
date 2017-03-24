@@ -105,9 +105,9 @@ public class CourseUsageServiceTest {
         //Act
         List<DailyUsageResponse> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
         int responseSizeActual = dailyUsagesForCourse.size();
-        long firstDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(firstSimpleDay))
+        long firstDayMinutesActual = dailyUsagesForCourse.stream().filter(f -> f.getDateTime().equals(firstSimpleDay))
                 .collect(Collectors.toList()).get(0).getTime();
-        long secondDayMinutesActual = dailyUsagesForCourse.stream().filter(f->f.getDateTime().equals(secondSimpleDay))
+        long secondDayMinutesActual = dailyUsagesForCourse.stream().filter(f -> f.getDateTime().equals(secondSimpleDay))
                 .collect(Collectors.toList()).get(0).getTime();
 
         //convert to minutes
@@ -168,18 +168,44 @@ public class CourseUsageServiceTest {
 
         //Act
         List<DailyUsageResponse> dailyUsageForCourse = courseUsageService.findDailyUsageForCourse(courseId);
-
+        String dateResponseActual = dailyUsageForCourse.get(0).getDateTime();
 
         //Assert
+        Assert.assertEquals(dateExpected, dateResponseActual);
     }
 
     @Test
     public void findDailyUsageForCourse_whenDaysWithoutActivity_notPresentInResponse() {
         //Arrange
+        ZonedDateTime zonedDateTimeWithActivity = ZonedDateTime.now();
+        ZonedDateTime zonedDateTimeWithoutActivity = ZonedDateTime.now().minusMonths(2);
+
+        String courseId = fairy.textProducer().randomString(10);
+
+        CourseUsage courseUsageWithActivity = new CourseUsage(
+                zonedDateTimeWithActivity,
+                5000,
+                fairy.textProducer().randomString(10),
+                courseId
+        );
+
+        CourseUsage courseUsageWithoutActivity = new CourseUsage(
+                zonedDateTimeWithoutActivity,
+                0,
+                fairy.textProducer().randomString(10),
+                courseId
+        );
+
+        courseUsageRepository.save(courseUsageWithActivity);
+        courseUsageRepository.save(courseUsageWithoutActivity);
+
+        int expectedResponseListSize = 1;
 
         //Act
+        int actualResponseListSize = courseUsageService.findDailyUsageForCourse(courseId).size();
 
         //Assert
+        Assert.assertEquals(expectedResponseListSize, actualResponseListSize);
     }
 
     @After
