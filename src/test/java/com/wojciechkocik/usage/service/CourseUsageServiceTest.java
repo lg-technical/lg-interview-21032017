@@ -17,6 +17,7 @@ import javax.validation.ConstraintViolationException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Wojciech Kocik
@@ -101,6 +102,34 @@ public class CourseUsageServiceTest {
         Assert.assertEquals(responseSizeExpected, responseSizeActual);
         Assert.assertEquals(firstDayMinutesExpected, firstDayMinutesActual);
         Assert.assertEquals(secondDayMinutesExpected, secondDayMinutesActual);
+    }
+
+    @Test
+    public void findDailyUsageForCourse_groupDate_hasProperSpentTime() {
+        //Arrange
+        ZonedDateTime started = ZonedDateTime.now();
+        int entitesWithSameDateForGroup = 5;
+        String userId = fairy.textProducer().randomString(10);
+        String courseId = fairy.textProducer().randomString(10);
+
+        for (int i = 0; i < entitesWithSameDateForGroup; i++) {
+            CourseUsage courseUsage = new CourseUsage(
+                    started,
+                    new Random().nextInt(50000),
+                    userId,
+                    courseId
+            );
+            courseUsageRepository.save(courseUsage);
+        }
+
+        int sizeExpected = 1;
+
+        //Act
+        List<DailyUsage> dailyUsageForCourse = courseUsageService.findDailyUsageForCourse(courseId);
+        int sizeActual = dailyUsageForCourse.size();
+
+        //Assert
+        Assert.assertEquals(sizeExpected, sizeActual);
     }
 
     @Test

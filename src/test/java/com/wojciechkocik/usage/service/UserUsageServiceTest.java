@@ -82,6 +82,15 @@ public class UserUsageServiceTest {
     }
 
     @Test
+    public void findDailyUsagesForUser__groupDate_hasProperSpentTime(){
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
     public void findDailyUsagesForUser_whenCourseSessionCrossedMidnight_thenRestTimePassedToNextDay() {
         //Arrange
         int timeSpentMinutes = 10;
@@ -116,10 +125,29 @@ public class UserUsageServiceTest {
     @Test
     public void findDailyUsagesForUser_returnsProperDateFormat() {
         //Arrange
+        ZonedDateTime started = ZonedDateTime.now();
+        int entitesWithSameDateForGroup = 5;
+        String userId = fairy.textProducer().randomString(10);
+        String courseId = fairy.textProducer().randomString(10);
+
+        for (int i = 0; i < entitesWithSameDateForGroup; i++) {
+            CourseUsage courseUsage = new CourseUsage(
+                    started,
+                    new Random().nextInt(50000),
+                    userId,
+                    courseId
+            );
+            courseUsageRepository.save(courseUsage);
+        }
+
+        int sizeExpected = 1;
 
         //Act
+        List<DailyUsage> dailyUsageForCourse = userUsageService.findDailyUsagesForUser(userId);
+        int sizeActual = dailyUsageForCourse.size();
 
         //Assert
+        Assert.assertEquals(sizeExpected, sizeActual);
     }
 
     @Test

@@ -33,5 +33,4 @@ public class UserUsageController {
     public List<PerCourseUsageForUser> getPerCourseUsage(@PathVariable String userId){
         return userUsageService.findPerCourseUsage(userId);
     }
-
 }
