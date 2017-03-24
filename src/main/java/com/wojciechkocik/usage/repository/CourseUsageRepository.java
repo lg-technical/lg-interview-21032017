@@ -16,17 +16,17 @@ public interface CourseUsageRepository extends CrudRepository<CourseUsage, Long>
 
     @Query(value = "select new com.wojciechkocik.usage.dto.DailyUsage(v.started, v.timeSpent) " +
             "from CourseUsage v " +
-            "where v.userId = ?1")
+            "where v.userId = ?1 and v.timeSpent > 0")
     List<DailyUsage> findSpentTimeByUserIdOnDate(String userId);
 
     @Query(value = "select new com.wojciechkocik.usage.dto.PerCourseUsageForUser(v.courseId, sum(v.timeSpent)) " +
             "from CourseUsage v " +
-            "where v.userId = ?1 " +
+            "where v.userId = ?1 and v.timeSpent > 0" +
             "group by v.courseId")
     List<PerCourseUsageForUser> findPerCourseSpentTimeByUserId(String userId);
 
     @Query(value = "select new com.wojciechkocik.usage.dto.DailyUsage(v.started, v.timeSpent) " +
             "from CourseUsage v " +
-            "where v.courseId = ?1")
+            "where v.courseId = ?1 and v.timeSpent > 0")
     List<DailyUsage> findSpentTimeByCourseIdOnDate(String courseId);
 }

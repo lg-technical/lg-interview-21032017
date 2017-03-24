@@ -3,8 +3,6 @@ package com.wojciechkocik.usage.service;
 import com.wojciechkocik.usage.dto.DailyUsage;
 import com.wojciechkocik.usage.dto.DailyUsageResponse;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
