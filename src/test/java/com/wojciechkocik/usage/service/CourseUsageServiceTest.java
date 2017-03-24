@@ -1,7 +1,7 @@
 package com.wojciechkocik.usage.service;
 
 import com.wojciechkocik.usage.dto.CourseUsageCreate;
-import com.wojciechkocik.usage.dto.DailyUsage;
+import com.wojciechkocik.usage.dto.DailyUsageResponse;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import org.jfairy.Fairy;
@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.validation.ConstraintViolationException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 
@@ -93,7 +94,7 @@ public class CourseUsageServiceTest {
         long secondDayMinutesExpected = timeSpentMinutes - firstDayMinutesExpected;
 
         //Act
-        List<DailyUsage> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
+        List<DailyUsageResponse> dailyUsagesForCourse = courseUsageService.findDailyUsageForCourse(courseId);
         int responseSizeActual = dailyUsagesForCourse.size();
         long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
         long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;
@@ -108,11 +109,11 @@ public class CourseUsageServiceTest {
     public void findDailyUsageForCourse_groupDate_hasProperSpentTime() {
         //Arrange
         ZonedDateTime started = ZonedDateTime.now();
-        int entitesWithSameDateForGroup = 5;
+        int entitiesWithSameDateForGroup = 5;
         String userId = fairy.textProducer().randomString(10);
         String courseId = fairy.textProducer().randomString(10);
 
-        for (int i = 0; i < entitesWithSameDateForGroup; i++) {
+        for (int i = 0; i < entitiesWithSameDateForGroup; i++) {
             CourseUsage courseUsage = new CourseUsage(
                     started,
                     new Random().nextInt(50000),
@@ -125,7 +126,7 @@ public class CourseUsageServiceTest {
         int sizeExpected = 1;
 
         //Act
-        List<DailyUsage> dailyUsageForCourse = courseUsageService.findDailyUsageForCourse(courseId);
+        List<DailyUsageResponse> dailyUsageForCourse = courseUsageService.findDailyUsageForCourse(courseId);
         int sizeActual = dailyUsageForCourse.size();
 
         //Assert
@@ -135,8 +136,24 @@ public class CourseUsageServiceTest {
     @Test
     public void findDailyUsageForCourse_returnsProperDateFormat() {
         //Arrange
+        ZonedDateTime dateTime = ZonedDateTime.now();
+        String userId = fairy.textProducer().randomString(10);
+        String courseId = fairy.textProducer().randomString(10);
+
+        CourseUsage courseUsage = new CourseUsage(
+                dateTime,
+                new Random().nextInt(50000),
+                userId,
+                courseId
+        );
+
+        courseUsageRepository.save(courseUsage);
+
+        String dateExpected = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         //Act
+        List<DailyUsageResponse> dailyUsageForCourse = courseUsageService.findDailyUsageForCourse(courseId);
+
 
         //Assert
     }

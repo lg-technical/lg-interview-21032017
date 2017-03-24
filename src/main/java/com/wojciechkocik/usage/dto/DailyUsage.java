@@ -1,9 +1,9 @@
 package com.wojciechkocik.usage.dto;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Wojciech Kocik
@@ -16,16 +16,19 @@ public class DailyUsage {
         this.time = time;
     }
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private ZonedDateTime dateTime;
 
     private long time;
 
-    public void minusSpentSeconds(long seconds){
+    public void minusSpentSeconds(long seconds) {
         time -= seconds;
     }
 
-    public void plusSpentSeconds(long seconds){
+    public void plusSpentSeconds(long seconds) {
         time += seconds;
+    }
+
+    public String getSimpleDate() {
+        return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 }

@@ -1,14 +1,12 @@
 package com.wojciechkocik.usage.service;
 
 import com.wojciechkocik.usage.dto.DailyUsage;
+import com.wojciechkocik.usage.dto.DailyUsageResponse;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Wojciech Kocik
@@ -26,7 +24,7 @@ public class UserUsageServiceImpl implements UserUsageService {
     }
 
     @Override
-    public List<DailyUsage> findDailyUsagesForUser(String userId) {
+    public List<DailyUsageResponse> findDailyUsagesForUser(String userId) {
         List<DailyUsage> dailyUsagesForUser = courseUsageRepository.findSpentTimeByUserIdOnDate(userId);
         List<DailyUsage> processedListByCrossedMidnightMechanism = crossMidnightService.run(dailyUsagesForUser);
         dailyUsagesForUser.addAll(processedListByCrossedMidnightMechanism);

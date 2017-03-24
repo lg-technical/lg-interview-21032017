@@ -1,7 +1,7 @@
 package com.wojciechkocik.usage.controller;
 
 import com.wojciechkocik.usage.dto.CourseUsageCreate;
-import com.wojciechkocik.usage.dto.DailyUsage;
+import com.wojciechkocik.usage.dto.DailyUsageResponse;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.service.CourseUsageService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class CourseUsageController {
     }
 
     @GetMapping("/{courseId}/daily")
-    public List<DailyUsage> getDailyUsage(@PathVariable String courseId){
+    public List<DailyUsageResponse> getDailyUsage(@PathVariable String courseId) {
         return courseUsageService.findDailyUsageForCourse(courseId);
     }
 }

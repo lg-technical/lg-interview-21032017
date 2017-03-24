@@ -2,6 +2,7 @@ package com.wojciechkocik.usage.service;
 
 import com.wojciechkocik.usage.dto.CourseUsageCreate;
 import com.wojciechkocik.usage.dto.DailyUsage;
+import com.wojciechkocik.usage.dto.DailyUsageResponse;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class CourseUsageServiceImpl implements CourseUsageService {
     }
 
     @Override
-    public List<DailyUsage> findDailyUsageForCourse(String courseId) {
+    public List<DailyUsageResponse> findDailyUsageForCourse(String courseId) {
         List<DailyUsage> dailyUsagesForCourse = courseUsageRepository.findSpentTimeByCourseIdOnDate(courseId);
         List<DailyUsage> processedListByCrossedMidnightMechanism = crossMidnightService.run(dailyUsagesForCourse);
         dailyUsagesForCourse.addAll(processedListByCrossedMidnightMechanism);

@@ -1,6 +1,6 @@
 package com.wojciechkocik.usage.service;
 
-import com.wojciechkocik.usage.dto.DailyUsage;
+import com.wojciechkocik.usage.dto.DailyUsageResponse;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 import com.wojciechkocik.usage.entity.CourseUsage;
 import com.wojciechkocik.usage.repository.CourseUsageRepository;
@@ -82,12 +82,31 @@ public class UserUsageServiceTest {
     }
 
     @Test
-    public void findDailyUsagesForUser__groupDate_hasProperSpentTime(){
+    public void findDailyUsagesForUser_groupDate_hasProperSpentTime(){
         //Arrange
+        ZonedDateTime started = ZonedDateTime.now();
+        int entitiesWithSameDateForGroup = 5;
+        String userId = fairy.textProducer().randomString(10);
+        String courseId = fairy.textProducer().randomString(10);
+
+        for (int i = 0; i < entitiesWithSameDateForGroup; i++) {
+            CourseUsage courseUsage = new CourseUsage(
+                    started,
+                    new Random().nextInt(50000),
+                    userId,
+                    courseId
+            );
+            courseUsageRepository.save(courseUsage);
+        }
+
+        int sizeExpected = 1;
 
         //Act
+        List<DailyUsageResponse> dailyUsageForCourse = userUsageService.findDailyUsagesForUser(userId);
+        int sizeActual = dailyUsageForCourse.size();
 
         //Assert
+        Assert.assertEquals(sizeExpected, sizeActual);
     }
 
     @Test
@@ -111,7 +130,7 @@ public class UserUsageServiceTest {
         long secondDayMinutesExpected = timeSpentMinutes - firstDayMinutesExpected;
 
         //Act
-        List<DailyUsage> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
+        List<DailyUsageResponse> dailyUsagesForCourse = userUsageService.findDailyUsagesForUser(userId);
         int responseSizeActual = dailyUsagesForCourse.size();
         long firstDayMinutesActual = Duration.ofSeconds(dailyUsagesForCourse.get(0).getTime()).toMinutes();
         long secondDayMinutesActual = timeSpentMinutes - firstDayMinutesActual;
@@ -120,34 +139,6 @@ public class UserUsageServiceTest {
         Assert.assertEquals(responseSizeExpected, responseSizeActual);
         Assert.assertEquals(firstDayMinutesExpected, firstDayMinutesActual);
         Assert.assertEquals(secondDayMinutesExpected, secondDayMinutesActual);
-    }
-
-    @Test
-    public void findDailyUsagesForUser_returnsProperDateFormat() {
-        //Arrange
-        ZonedDateTime started = ZonedDateTime.now();
-        int entitesWithSameDateForGroup = 5;
-        String userId = fairy.textProducer().randomString(10);
-        String courseId = fairy.textProducer().randomString(10);
-
-        for (int i = 0; i < entitesWithSameDateForGroup; i++) {
-            CourseUsage courseUsage = new CourseUsage(
-                    started,
-                    new Random().nextInt(50000),
-                    userId,
-                    courseId
-            );
-            courseUsageRepository.save(courseUsage);
-        }
-
-        int sizeExpected = 1;
-
-        //Act
-        List<DailyUsage> dailyUsageForCourse = userUsageService.findDailyUsagesForUser(userId);
-        int sizeActual = dailyUsageForCourse.size();
-
-        //Assert
-        Assert.assertEquals(sizeExpected, sizeActual);
     }
 
     @Test

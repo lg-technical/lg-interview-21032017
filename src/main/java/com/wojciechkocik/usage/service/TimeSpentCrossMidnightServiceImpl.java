@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class TimeSpentCrossMidnightServiceImpl implements TimeSpentCrossMidnightService {
 
     @Override
-    public List<DailyUsage> run(List<DailyUsage> dailyUsagesForCourse){
+    public List<DailyUsage> run(List<DailyUsage> dailyUsagesForCourse) {
 
         List<DailyUsage> newDaysForMergeWithCurrentList = new ArrayList<>();
 

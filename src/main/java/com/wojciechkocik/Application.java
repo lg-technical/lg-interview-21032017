@@ -9,49 +9,46 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 @Slf4j
 @SpringBootApplication
 public class Application {
 
-	private static int DATA_ENTITIES_QUANTITY = 10;
+    private static int DATA_ENTITIES_QUANTITY = 5000;
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	@Bean
-	public CommandLineRunner generateDbInitValues(CourseUsageService courseUsageService){
-		return (evt) ->
-		{
-			long start = Instant.now().toEpochMilli();
+    @Bean
+    public CommandLineRunner generateDbInitValues(CourseUsageService courseUsageService) {
+        return (evt) ->
+        {
+            long start = Instant.now().toEpochMilli();
 
-			for(int i = 0; i < DATA_ENTITIES_QUANTITY; i++){
-				CourseUsageCreate courseUsageCreate = CourseUsageCreate.builder()
-						.courseId(String.valueOf(new Random().nextInt(10)))
-						.started(
-								ZonedDateTime.now()
-										.minusDays(new Random().nextInt(50))
-										.minusHours(new Random().nextInt(23))
-										.minusMinutes(new Random().nextInt(59))
-						)
-						.timeSpent(new Random().nextInt(50000))
-						.userId(String.valueOf(new Random().nextInt(10)))
-						.build();
-				courseUsageService.createNewCourseUsage(courseUsageCreate);
-			}
+            for (int i = 0; i < DATA_ENTITIES_QUANTITY; i++) {
+                CourseUsageCreate courseUsageCreate = CourseUsageCreate.builder()
+                        .courseId(String.valueOf(new Random().nextInt(10)))
+                        .started(
+                                ZonedDateTime.now()
+                                        .minusDays(new Random().nextInt(50))
+                                        .minusHours(new Random().nextInt(23))
+                                        .minusMinutes(new Random().nextInt(59))
+                        )
+                        .timeSpent(new Random().nextInt(50000))
+                        .userId(String.valueOf(new Random().nextInt(10)))
+                        .build();
+                courseUsageService.createNewCourseUsage(courseUsageCreate);
+            }
 
-			long duration = Instant.now().toEpochMilli() - start;
+            long duration = Instant.now().toEpochMilli() - start;
 
-			log.info(
-					String.format("Generated %d CourseUsage entities with %d milliseconds",
-							DATA_ENTITIES_QUANTITY, duration)
-			);
-		};
-	}
+            log.info(
+                    String.format("Generated %d CourseUsage entities with %d milliseconds",
+                            DATA_ENTITIES_QUANTITY, duration)
+            );
+        };
+    }
 }

@@ -1,6 +1,6 @@
 package com.wojciechkocik.usage.service;
 
-import com.wojciechkocik.usage.dto.DailyUsage;
+import com.wojciechkocik.usage.dto.DailyUsageResponse;
 import com.wojciechkocik.usage.dto.PerCourseUsageForUser;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface UserUsageService {
 
-    List<DailyUsage> findDailyUsagesForUser(String userId);
+    List<DailyUsageResponse> findDailyUsagesForUser(String userId);
 
     List<PerCourseUsageForUser> findPerCourseUsage(String userId);
 }
