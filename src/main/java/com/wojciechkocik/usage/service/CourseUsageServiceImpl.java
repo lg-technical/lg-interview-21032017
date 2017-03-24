@@ -40,8 +40,6 @@ public class CourseUsageServiceImpl implements CourseUsageService {
         List<DailyUsage> processedListByCrossedMidnightMechanism = crossMidnightService.run(dailyUsagesForCourse);
         dailyUsagesForCourse.addAll(processedListByCrossedMidnightMechanism);
 
-        //TODO: grouping by date
-
-        return dailyUsagesForCourse;
+        return DailyUsageUtils.groupByDateAndSumTime(dailyUsagesForCourse);
     }
 }
