@@ -203,8 +203,8 @@ public class UserUsageServiceTest {
     @Test
     public void findDailyUsagesForUser_whenDaysWithoutActivity_notPresentInResponse() {
         //Arrange
-        ZonedDateTime zonedDateTimeWithActivity = ZonedDateTime.now();
-        ZonedDateTime zonedDateTimeWithoutActivity = ZonedDateTime.now().minusMonths(2);
+        ZonedDateTime zonedDateTimeWithActivity = ZonedDateTime.parse("2017-03-28T09:54:26.492+02:00[Europe/Belgrade]");
+        ZonedDateTime zonedDateTimeWithoutActivity = zonedDateTimeWithActivity.minusMonths(2);
 
         String userId = fairy.textProducer().randomString(10);
 

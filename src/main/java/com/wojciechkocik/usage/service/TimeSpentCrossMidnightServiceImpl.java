@@ -3,12 +3,12 @@ package com.wojciechkocik.usage.service;
 import com.wojciechkocik.usage.dto.DailyUsage;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link TimeSpentCrossMidnightService} using java 8 features
@@ -20,63 +20,58 @@ import java.util.stream.Collectors;
 public class TimeSpentCrossMidnightServiceImpl implements TimeSpentCrossMidnightService {
 
     @Override
-    public List<DailyUsage> run(List<DailyUsage> dailyUsagesForCourse) {
+    public List<DailyUsage> divideDaysWithTimeSessionCrossedMidnight(List<DailyUsage> dailyUsagesForCourse) {
 
-        List<DailyUsage> newDaysForMergeWithCurrentList = new ArrayList<>();
+        List<DailyUsage> dividedDailyUsages = new ArrayList<>();
 
-        dailyUsagesForCourse.forEach(p -> {
-            ZonedDateTime dateTime = p.getDateTime();
+        dailyUsagesForCourse.forEach(dailyUsage -> {
+            ZonedDateTime timeDateStarted = dailyUsage.getDateTime();
 
-            int dayBeforeSessionDuration = dateTime.getDayOfMonth();
+            long sessionTime = dailyUsage.getTime();
 
-            long sessionDuration = p.getTime();
-            int dayAfterSessionDuration = dateTime.plusSeconds(sessionDuration).getDayOfMonth();
+            long epochBeforeSession = timeDateStarted.toEpochSecond();
+            long epochAfterSession = timeDateStarted.plusSeconds(sessionTime).toEpochSecond();
+            long epochDiff = epochAfterSession - epochBeforeSession;
 
-            if (isCrossedMidnight(dayBeforeSessionDuration, dayAfterSessionDuration)) {
+            long untilMidnight = timeDateStarted.until(getMidnightOfDate(timeDateStarted.plusDays(1)), ChronoUnit.SECONDS);
+            long restEpoch = epochDiff - untilMidnight;
 
-                ZonedDateTime zonedDateTimeMidnight = getMidnightOfDate(dateTime);
-                long untilMidnightSeconds = dateTime.until(zonedDateTimeMidnight.plusDays(1), ChronoUnit.SECONDS);
-                long secondsForNextDay = sessionDuration - untilMidnightSeconds;
+            if(sessionTime <= 0){
+                return;
+            }
+            if (sessionTime <= untilMidnight) {
+                dividedDailyUsages.add(dailyUsage);
+                return;
+            }
 
-                p.minusSpentSeconds(secondsForNextDay);
+            int daysSessionExceptFirstAndLastDay = (int) Duration.ofSeconds(restEpoch).toDays();
+            int wholeDaysSession = daysSessionExceptFirstAndLastDay + 2;
 
-                List<DailyUsage> collect = filterDailyUsagesNextDays(dailyUsagesForCourse, dateTime);
+            long restEpochTemp = restEpoch;
 
-                if (!collect.isEmpty()) {
-                    //add only for 1st element because in the next step it will be grouped
-                    collect.get(0).plusSpentSeconds(secondsForNextDay);
+            long secondsInDay = 60 * 60 * 24;
+
+            for (int i = 0; i < wholeDaysSession; i++) {
+                DailyUsage dailyUsageTemp = null;
+                if (i == 0) { //first day
+                    dailyUsageTemp = new DailyUsage(timeDateStarted.plusDays(i), untilMidnight);
                 } else {
-                    //there are no elements so next day must be created (midnight is started)
-                    DailyUsage dailyUsageForCourseWithTimeFromDayBefore = new DailyUsage(
-                            zonedDateTimeMidnight.plusDays(1),
-                            secondsForNextDay
-                    );
-                    newDaysForMergeWithCurrentList.add(dailyUsageForCourseWithTimeFromDayBefore);
+                    ZonedDateTime midnightOfNextDay = getMidnightOfDate(timeDateStarted.plusDays(i));
+                    if (restEpochTemp > secondsInDay) {
+                        dailyUsageTemp = new DailyUsage(midnightOfNextDay, secondsInDay);
+                        restEpochTemp -= secondsInDay;
+                    } else {
+                        dailyUsageTemp = new DailyUsage(midnightOfNextDay, restEpochTemp);
+                    }
                 }
+                dividedDailyUsages.add(dailyUsageTemp);
             }
         });
-        return newDaysForMergeWithCurrentList;
-    }
-
-    private boolean isCrossedMidnight(int dayBeforeSessionDuration, int dayAfterSessionDuration) {
-        return dayAfterSessionDuration != dayBeforeSessionDuration;
+        return dividedDailyUsages;
     }
 
     private ZonedDateTime getMidnightOfDate(ZonedDateTime dateTime) {
         return dateTime
                 .toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(dateTime.getZone());
     }
-
-    private List<DailyUsage> filterDailyUsagesNextDays(List<DailyUsage> dailyUsagesForCourse, ZonedDateTime dateTime) {
-        return dailyUsagesForCourse.stream().filter(f -> {
-            ZonedDateTime zonedDateTime = f.getDateTime().toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(dateTime.getZone());
-            long untilHours = getMidnightOfDate(dateTime).until(zonedDateTime, ChronoUnit.HOURS);
-            if (untilHours > 0 && untilHours < 24) { //is next day
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
-    }
-
-
 }

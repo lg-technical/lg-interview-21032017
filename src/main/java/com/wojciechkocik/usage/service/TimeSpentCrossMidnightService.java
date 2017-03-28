@@ -14,5 +14,5 @@ import java.util.List;
  * @since 24.03.2017
  */
 public interface TimeSpentCrossMidnightService {
-    List<DailyUsage> run(List<DailyUsage> dailyUsagesForCourse);
+    List<DailyUsage> divideDaysWithTimeSessionCrossedMidnight(List<DailyUsage> dailyUsagesForCourse);
 }

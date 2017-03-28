@@ -36,9 +36,8 @@ public class UserUsageServiceImpl implements UserUsageService {
     @Override
     public List<DailyUsageResponse> findDailyUsagesForUser(String userId) {
         List<DailyUsage> dailyUsagesForUser = courseUsageRepository.findSpentTimeByUserIdOnDate(userId);
-        List<DailyUsage> processedListByCrossedMidnightMechanism = crossMidnightService.run(dailyUsagesForUser);
-        dailyUsagesForUser.addAll(processedListByCrossedMidnightMechanism);
-        return DailyUsageUtils.groupByDateAndSumTime(dailyUsagesForUser);
+        List<DailyUsage> processedListByCrossedMidnightMechanism = crossMidnightService.divideDaysWithTimeSessionCrossedMidnight(dailyUsagesForUser);
+        return DailyUsageUtils.groupByDateAndSumTime(processedListByCrossedMidnightMechanism);
     }
 
     /**
